@@ -43,6 +43,8 @@ public class JobData {
             }
         }
 
+        values.sort(String.CASE_INSENSITIVE_ORDER);
+
         return values;
     }
 
@@ -51,7 +53,7 @@ public class JobData {
         // load data, if not already loaded
         loadData();
 
-        return allJobs;
+        return new ArrayList<>(allJobs);
     }
 
     /**
@@ -74,10 +76,39 @@ public class JobData {
 
         for (HashMap<String, String> row : allJobs) {
 
-            String aValue = row.get(column);
+            String aValue = row.get(column).toLowerCase();
 
             if (aValue.contains(value)) {
                 jobs.add(row);
+            }
+        }
+
+        return jobs;
+    }
+
+    /**
+     * Returns results of searching all the jobs data fields by value, using
+     * inclusion of the search term.
+     *
+     * For example, searching for "Enterprise" will include results
+     * with "Enterprise Holdings, Inc".
+     *
+     * @param value Value to search for in fields
+     * @return List of all jobs matching the criteria
+     */
+    public static ArrayList<HashMap<String, String>> findByValue(String value) {
+
+        loadData();
+
+        ArrayList<HashMap<String, String>> jobs = new ArrayList<>();
+
+        for (HashMap<String, String> job : allJobs) {
+            for (String field : job.keySet()) {
+                if (job.get(field).toLowerCase().contains(value)) {
+                    if (!jobs.contains(job)) {
+                        jobs.add(job);
+                    }
+                }
             }
         }
 
